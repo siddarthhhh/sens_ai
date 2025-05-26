@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
 <html
       lang="en"
-      className={`${inter.className} `}
+      // className={`${inter.className} `}
       suppressHydrationWarning
     >
       <body
