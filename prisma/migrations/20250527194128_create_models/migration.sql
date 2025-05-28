@@ -73,6 +73,7 @@ CREATE TABLE "IndustryInsight" (
 
     CONSTRAINT "IndustryInsight_pkey" PRIMARY KEY ("id")
 );
+--redifined the schems
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_clerkUserId_key" ON "User"("clerkUserId");
