@@ -27,7 +27,7 @@ export default async function RootLayout({ children }) {
             <Header />
             
             {/* ✅ Add Toaster here */}
-            <Toaster />
+            <Toaster richColors />
 
             <main className="min-h-screen">{children}</main>
 
