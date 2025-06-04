@@ -4,18 +4,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CardFooter } from "@/components/ui/card";
 import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "sonner"; // ✅ import Toaster
 
-// ✅ Define fonts before using them
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
- 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-const inter = Inter({subsets : ["latin"]});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Sens_ai Career Coach",
@@ -23,46 +14,31 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  
-  
   return (
-    
-    
     <ClerkProvider>
-<html
-      lang="en"
-      // className={`${inter.className} `}
-      suppressHydrationWarning
-    >
-      <body
-        className={`${inter.className} min-h-screen flex flex-col`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} min-h-screen flex flex-col`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            
+            {/* ✅ Add Toaster here */}
+            <Toaster />
 
-          {/*header*/}
-          <Header>
-              
-          </Header>
+            <main className="min-h-screen">{children}</main>
 
-                      
-          {/* Content wrapper that grows to fill remaining space */}
-          <main className="min-h-screen">{children}</main>
-
-          {/* Sticky footer at the bottom */}
-          <footer className="bg-muted/50 py-12">
-            <div className="container mx-auto px-4 text-center text-gray-200">
-              <p>made with love by sid</p>
-            </div>
-          </footer>
-        </ThemeProvider>
-      </body>
-    </html>
+            <footer className="bg-muted/50 py-12">
+              <div className="container mx-auto px-4 text-center text-gray-200">
+                <p>made with love by sid</p>
+              </div>
+            </footer>
+          </ThemeProvider>
+        </body>
+      </html>
     </ClerkProvider>
-    
   );
 }
