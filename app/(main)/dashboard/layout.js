@@ -1,7 +1,8 @@
 import { BarLoader } from "react-spinners";
 import { Suspense } from "react";
 
-export default function Layout({ children }) {
+export default async function Layout({ children }) {
+  await checkUser();
   return (
     <div className="px-5">
       <div className="flex items-center justify-between mb-5">
