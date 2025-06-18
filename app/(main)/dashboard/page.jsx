@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+
+
 import React from 'react';
 import { getUserOnboardingStatus } from '@/actions/user';
 import { redirect } from 'next/navigation';
