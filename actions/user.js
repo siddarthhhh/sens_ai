@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import  prisma  from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
@@ -9,28 +9,28 @@ export async function updateUser(data) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Fetch existing user
   const user = await prisma.user.findUnique({
     where: { clerkUserId: userId },
   });
+
   if (!user) throw new Error("User not found");
 
   try {
+    // Start a transaction to handle both operations
     const result = await prisma.$transaction(
       async (tx) => {
-        // 1) Try to find an existing IndustryInsight row
+        // First check if industry exists
         let industryInsight = await tx.industryInsight.findUnique({
-          where: { industry: data.industry },
+          where: {
+            industry: data.industry,
+          },
         });
 
-        // 2) If none exists, generate AI insights and create it
+        // If industry doesn't exist, create it with default values
         if (!industryInsight) {
           const insights = await generateAIInsights(data.industry);
 
-          // Notice that we:
-          //  - assign back to `industryInsight` (singular)
-          //  - use `tx.industryInsight.create(...)`, not `prisma.industryInsight.create(...)`
-          industryInsight = await tx.industryInsight.create({
+          industryInsight = await prisma.industryInsight.create({
             data: {
               industry: data.industry,
               ...insights,
@@ -39,9 +39,11 @@ export async function updateUser(data) {
           });
         }
 
-        // 3) Update the user record
+        // Now update the user
         const updatedUser = await tx.user.update({
-          where: { id: user.id },
+          where: {
+            id: user.id,
+          },
           data: {
             industry: data.industry,
             experience: data.experience,
@@ -52,14 +54,13 @@ export async function updateUser(data) {
 
         return { updatedUser, industryInsight };
       },
-      { timeout: 10000 }
+      {
+        timeout: 10000, // default: 5000
+      }
     );
 
     revalidatePath("/");
-    return {
-      success: true,
-      user: result.updatedUser,
-    };
+    return result.user;
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
     throw new Error("Failed to update profile");
@@ -70,16 +71,22 @@ export async function getUserOnboardingStatus() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const existingUser = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { clerkUserId: userId },
   });
-  if (!existingUser) throw new Error("User not found");
+
+  if (!user) throw new Error("User not found");
 
   try {
     const user = await prisma.user.findUnique({
-      where: { clerkUserId: userId },
-      select: { industry: true },
+      where: {
+        clerkUserId: userId,
+      },
+      select: {
+        industry: true,
+      },
     });
+
     return {
       isOnboarded: !!user?.industry,
     };

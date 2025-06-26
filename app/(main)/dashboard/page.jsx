@@ -1,24 +1,22 @@
-export const dynamic = 'force-dynamic';
-
-
-import React from 'react';
-import { getUserOnboardingStatus } from '@/actions/user';
-import { redirect } from 'next/navigation';
-import { getIndustryInsights } from '@/actions/dashboard';
+import { getIndustryInsights } from "@/actions/dashboard";
 import DashboardView from "./_component/dashboard-view";
+import { getUserOnboardingStatus } from "@/actions/user";
+import { redirect } from "next/navigation";
 
-const IndustryInsightPage = async () => {
+export default async function DashboardPage() {
   const { isOnboarded } = await getUserOnboardingStatus();
-  const insights=await getIndustryInsights();
 
+  // If not onboarded, redirect to onboarding page
+  // Skip this check if already on the onboarding page
   if (!isOnboarded) {
-    // Redirect users who have NOT onboarded to onboarding page
-    redirect('/onboarding');
+    redirect("/onboarding");
   }
 
-  return <div className='container mx-auto'>
-    <DashboardView insights={insights} />
-    </div>;
-};
+  const insights = await getIndustryInsights();
 
-export default IndustryInsightPage;
+  return (
+    <div className="container mx-auto">
+      <DashboardView insights={insights} />
+    </div>
+  );
+}
